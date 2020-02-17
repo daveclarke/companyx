@@ -7,7 +7,7 @@ class Solution {
 
     private int _rowCount;
     private int _colCount;
-    private HashSet<int>[] _countryMap;
+    private bool[,] _countryMap;
     private int[,] _mapData;
 
     public int solution(int[,] A) {
@@ -20,16 +20,15 @@ class Solution {
         _mapData = A;
         _colCount = _mapData.GetLength(0);
         _rowCount = _mapData.GetLength(1);
-        _countryMap = new HashSet<int>[_rowCount].Select(elt => new HashSet<int>()).ToArray();
+        _countryMap = new bool[_colCount, _rowCount];
         for (int y = 0; y < _rowCount; y++)
         {
             for (int x = 0; x < _colCount; x++)
             {
-                if (_countryMap[y].Contains(x)) continue;
-
+                if (_countryMap[x,y]) continue;
                 // new country, find all elements in country
                 countryCount++;
-                _countryMap[y].Add(x);
+                _countryMap[x, y] = true;
                 SearchEast(x, y, _mapData[x, y]);
                 SearchSouth(x, y, _mapData[x, y]);
             }
@@ -41,7 +40,7 @@ class Solution {
 
     private void findAllAdjacentNorth(int x, int y, int countryCode)
     {
-        _countryMap[y].Add(x);
+        _countryMap[x,y] = true;
         SearchWest(x, y, countryCode);
         SearchNorth(x, y, countryCode);
         SearchEast(x, y, countryCode);
@@ -49,7 +48,7 @@ class Solution {
 
     private void findAllAdjacentWest(int x, int y, int countryCode)
     {
-        _countryMap[y].Add(x);
+        _countryMap[x,y] = true;
         SearchNorth(x, y, countryCode);
         SearchWest(x, y, countryCode);
         SearchSouth(x, y, countryCode);
@@ -57,7 +56,7 @@ class Solution {
 
     private void findAllAdjacentEast(int x, int y, int countryCode)
     {
-        _countryMap[y].Add(x);
+        _countryMap[x,y] = true;
         SearchNorth(x, y, countryCode);
         SearchEast(x, y, countryCode);
         SearchSouth(x, y, countryCode);
@@ -65,7 +64,7 @@ class Solution {
 
     private void findAllAdjacentSouth(int x, int y, int countryCode)
     {
-        _countryMap[y].Add(x);
+        _countryMap[x,y] = true;
         SearchEast(x, y, countryCode);
         SearchSouth(x, y, countryCode);
         SearchWest(x, y, countryCode);
@@ -73,22 +72,22 @@ class Solution {
 
     private void SearchSouth(int x, int y, int countryCode)
     {
-        if (y < _rowCount - 1 && _mapData[x, y + 1] == countryCode && !_countryMap[y + 1].Contains(x)) findAllAdjacentSouth(x, y + 1, countryCode);
+        if (y < _rowCount - 1 && _mapData[x, y + 1] == countryCode && !_countryMap[x, y + 1]) findAllAdjacentSouth(x, y + 1, countryCode);
     }
 
     private void SearchEast(int x, int y, int countryCode)
     {
-        if (x < _colCount - 1 && _mapData[x + 1, y] == countryCode && !_countryMap[y].Contains(x + 1)) findAllAdjacentEast(x + 1, y, countryCode);
+        if (x < _colCount - 1 && _mapData[x + 1, y] == countryCode && !_countryMap[x + 1, y]) findAllAdjacentEast(x + 1, y, countryCode);
     }
 
     private void SearchNorth(int x, int y, int countryCode)
     {
-        if (y > 0 && _mapData[x, y - 1] == countryCode && !_countryMap[y - 1].Contains(x)) findAllAdjacentNorth(x, y - 1, countryCode);
+        if (y > 0 && _mapData[x, y - 1] == countryCode && !_countryMap[x, y - 1]) findAllAdjacentNorth(x, y - 1, countryCode);
     }
 
     private void SearchWest(int x, int y, int countryCode)
     {
-        if (x > 0 && _mapData[x - 1, y] == countryCode && !_countryMap[y].Contains(x - 1)) findAllAdjacentWest(x - 1, y, countryCode);
+        if (x > 0 && _mapData[x - 1, y] == countryCode && !_countryMap[x - 1, y]) findAllAdjacentWest(x - 1, y, countryCode);
     }
 
 
