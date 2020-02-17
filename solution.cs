@@ -41,7 +41,6 @@ class Solution {
 
     private void FindAllAdjacentNorth(int x, int y, int countryCode)
     {
-        _countryMap[x,y] = true;
         SearchWest(x, y, countryCode);
         SearchNorth(x, y, countryCode);
         SearchEast(x, y, countryCode);
@@ -49,7 +48,6 @@ class Solution {
 
     private void FindAllAdjacentWest(int x, int y, int countryCode)
     {
-        _countryMap[x,y] = true;
         SearchNorth(x, y, countryCode);
         SearchWest(x, y, countryCode);
         SearchSouth(x, y, countryCode);
@@ -57,7 +55,6 @@ class Solution {
 
     private void FindAllAdjacentEast(int x, int y, int countryCode)
     {
-        _countryMap[x,y] = true;
         SearchNorth(x, y, countryCode);
         SearchEast(x, y, countryCode);
         SearchSouth(x, y, countryCode);
@@ -65,7 +62,6 @@ class Solution {
 
     private void FindAllAdjacentSouth(int x, int y, int countryCode)
     {
-        _countryMap[x,y] = true;
         SearchEast(x, y, countryCode);
         SearchSouth(x, y, countryCode);
         SearchWest(x, y, countryCode);
@@ -73,22 +69,38 @@ class Solution {
 
     private void SearchSouth(int x, int y, int countryCode)
     {
-        if (y < _rowCount - 1 && _mapData[x, y + 1] == countryCode && !_countryMap[x, y + 1]) FindAllAdjacentSouth(x, y + 1, countryCode);
+        if (y < _rowCount - 1 && _mapData[x, y + 1] == countryCode && !_countryMap[x, y + 1])
+        {
+            _countryMap[x, y + 1] = true;
+            FindAllAdjacentSouth(x, y + 1, countryCode);
+        }
     }
 
     private void SearchEast(int x, int y, int countryCode)
     {
-        if (x < _colCount - 1 && _mapData[x + 1, y] == countryCode && !_countryMap[x + 1, y]) FindAllAdjacentEast(x + 1, y, countryCode);
+        if (x < _colCount - 1 && _mapData[x + 1, y] == countryCode && !_countryMap[x + 1, y])
+        {
+            _countryMap[x + 1, y] = true;
+            FindAllAdjacentEast(x + 1, y, countryCode);
+        }
     }
 
     private void SearchNorth(int x, int y, int countryCode)
     {
-        if (y > 0 && _mapData[x, y - 1] == countryCode && !_countryMap[x, y - 1]) FindAllAdjacentNorth(x, y - 1, countryCode);
+        if (y > 0 && _mapData[x, y - 1] == countryCode && !_countryMap[x, y - 1])
+        {
+            _countryMap[x, y - 1] = true;
+            FindAllAdjacentNorth(x, y - 1, countryCode);
+        }
     }
 
     private void SearchWest(int x, int y, int countryCode)
     {
-        if (x > 0 && _mapData[x - 1, y] == countryCode && !_countryMap[x - 1, y]) FindAllAdjacentWest(x - 1, y, countryCode);
+        if (x > 0 && _mapData[x - 1, y] == countryCode && !_countryMap[x - 1, y])
+        {
+            _countryMap[x - 1, y] = true;
+            FindAllAdjacentWest(x - 1, y, countryCode);
+        }
     }
 
 
