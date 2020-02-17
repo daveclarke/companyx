@@ -10,7 +10,7 @@ class Solution {
     private bool[,] _countryMap;
     private int[,] _mapData;
 
-    public int solution(int[,] A) {
+    public int Soln(int[,] A) {
         // N & M in range 1..300,000
         // number of elements in range 1..300,000
         // each element is in range -1,000,000,000..1,000,000,000
@@ -26,6 +26,7 @@ class Solution {
             for (int x = 0; x < _colCount; x++)
             {
                 if (_countryMap[x,y]) continue;
+                
                 // new country, find all elements in country
                 countryCount++;
                 _countryMap[x, y] = true;
@@ -38,7 +39,7 @@ class Solution {
         return countryCount;
     }
 
-    private void findAllAdjacentNorth(int x, int y, int countryCode)
+    private void FindAllAdjacentNorth(int x, int y, int countryCode)
     {
         _countryMap[x,y] = true;
         SearchWest(x, y, countryCode);
@@ -46,7 +47,7 @@ class Solution {
         SearchEast(x, y, countryCode);
     }
 
-    private void findAllAdjacentWest(int x, int y, int countryCode)
+    private void FindAllAdjacentWest(int x, int y, int countryCode)
     {
         _countryMap[x,y] = true;
         SearchNorth(x, y, countryCode);
@@ -54,7 +55,7 @@ class Solution {
         SearchSouth(x, y, countryCode);
     }
 
-    private void findAllAdjacentEast(int x, int y, int countryCode)
+    private void FindAllAdjacentEast(int x, int y, int countryCode)
     {
         _countryMap[x,y] = true;
         SearchNorth(x, y, countryCode);
@@ -62,7 +63,7 @@ class Solution {
         SearchSouth(x, y, countryCode);
     }
 
-    private void findAllAdjacentSouth(int x, int y, int countryCode)
+    private void FindAllAdjacentSouth(int x, int y, int countryCode)
     {
         _countryMap[x,y] = true;
         SearchEast(x, y, countryCode);
@@ -72,22 +73,22 @@ class Solution {
 
     private void SearchSouth(int x, int y, int countryCode)
     {
-        if (y < _rowCount - 1 && _mapData[x, y + 1] == countryCode && !_countryMap[x, y + 1]) findAllAdjacentSouth(x, y + 1, countryCode);
+        if (y < _rowCount - 1 && _mapData[x, y + 1] == countryCode && !_countryMap[x, y + 1]) FindAllAdjacentSouth(x, y + 1, countryCode);
     }
 
     private void SearchEast(int x, int y, int countryCode)
     {
-        if (x < _colCount - 1 && _mapData[x + 1, y] == countryCode && !_countryMap[x + 1, y]) findAllAdjacentEast(x + 1, y, countryCode);
+        if (x < _colCount - 1 && _mapData[x + 1, y] == countryCode && !_countryMap[x + 1, y]) FindAllAdjacentEast(x + 1, y, countryCode);
     }
 
     private void SearchNorth(int x, int y, int countryCode)
     {
-        if (y > 0 && _mapData[x, y - 1] == countryCode && !_countryMap[x, y - 1]) findAllAdjacentNorth(x, y - 1, countryCode);
+        if (y > 0 && _mapData[x, y - 1] == countryCode && !_countryMap[x, y - 1]) FindAllAdjacentNorth(x, y - 1, countryCode);
     }
 
     private void SearchWest(int x, int y, int countryCode)
     {
-        if (x > 0 && _mapData[x - 1, y] == countryCode && !_countryMap[x - 1, y]) findAllAdjacentWest(x - 1, y, countryCode);
+        if (x > 0 && _mapData[x - 1, y] == countryCode && !_countryMap[x - 1, y]) FindAllAdjacentWest(x - 1, y, countryCode);
     }
 
 
@@ -153,7 +154,7 @@ public class A_codility_solution_should
         var soln = new Solution();
 
         // act
-        var output = soln.solution(testData);
+        var output = soln.Soln(testData);
 
         // assert
         Assert.Equal(expected, output);
@@ -179,7 +180,7 @@ public class A_codility_solution_should
         }
 
         // act
-        var output = soln.solution(testData);
+        var output = soln.Soln(testData);
 
         // assert
         Assert.True(true);
