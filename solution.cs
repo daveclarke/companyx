@@ -1,14 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 class Solution {
+
+    [Flags]
+    private enum Direction
+    {
+        None = 0,
+        North = 1,
+        East = 2,
+        South = 4,
+        West = 8
+    }
 
     private int _rowCount;
     private int _colCount;
     private bool[,] _countryMap;
     private int[,] _mapData;
+    private Direction[,] _eltMatch;
 
     public int Soln(int[,] A) {
         // N & M in range 1..300,000
@@ -21,6 +33,25 @@ class Solution {
         _colCount = _mapData.GetLength(0);
         _rowCount = _mapData.GetLength(1);
         _countryMap = new bool[_colCount, _rowCount];
+        _eltMatch = new Direction[_colCount, _rowCount];
+        for (var y = 0; y < _rowCount; y++)
+        {
+            for (var x = 0; x < _colCount; x++)
+            {
+                var eltValue = _mapData[x,y];
+                if (x < _colCount - 1 &&  _mapData[x + 1, y] == eltValue)
+                {
+                    _eltMatch[x, y] |= Direction.East;
+                    _eltMatch[x + 1, y] |= Direction.West;
+                }
+                if (y < _rowCount - 1 && _mapData[x, y + 1] == eltValue)
+                {
+                    _eltMatch[x, y] |= Direction.South;
+                    _eltMatch[x, y + 1] |= Direction.North;
+                }
+            }
+        }
+
         for (int y = 0; y < _rowCount; y++)
         {
             for (int x = 0; x < _colCount; x++)
@@ -30,8 +61,9 @@ class Solution {
                 // new country, find all elements in country
                 countryCount++;
                 _countryMap[x, y] = true;
-                SearchEast(x, y, _mapData[x, y]);
-                SearchSouth(x, y, _mapData[x, y]);
+                NavigateEast(x, y, _mapData[x, y]);
+                NavigateSouth(x, y, _mapData[x, y]);
+                _eltMatch[x, y] = Direction.None;
             }
 
         }
@@ -39,71 +71,80 @@ class Solution {
         return countryCount;
     }
 
-    private void FindAllAdjacentNorth(int x, int y, int countryCode)
+    private void SearchNorth(int x, int y, int countryCode)
     {
-        SearchWest(x, y, countryCode);
-        SearchNorth(x, y, countryCode);
-        SearchEast(x, y, countryCode);
-    }
+        _countryMap[x, y] = true;
 
-    private void FindAllAdjacentWest(int x, int y, int countryCode)
-    {
-        SearchNorth(x, y, countryCode);
-        SearchWest(x, y, countryCode);
-        SearchSouth(x, y, countryCode);
-    }
+        // burn bridges
+        _eltMatch[x, y + 1] &= ~Direction.North;
+        _eltMatch[x, y] &= ~Direction.South;
 
-    private void FindAllAdjacentEast(int x, int y, int countryCode)
-    {
-        SearchNorth(x, y, countryCode);
-        SearchEast(x, y, countryCode);
-        SearchSouth(x, y, countryCode);
-    }
+        NavigateWest(x, y, countryCode);
+        NavigateNorth(x, y, countryCode);
+        NavigateEast(x, y, countryCode);
 
-    private void FindAllAdjacentSouth(int x, int y, int countryCode)
-    {
-        SearchEast(x, y, countryCode);
-        SearchSouth(x, y, countryCode);
-        SearchWest(x, y, countryCode);
-    }
-
-    private void SearchSouth(int x, int y, int countryCode)
-    {
-        if (y < _rowCount - 1 && _mapData[x, y + 1] == countryCode && !_countryMap[x, y + 1])
-        {
-            _countryMap[x, y + 1] = true;
-            FindAllAdjacentSouth(x, y + 1, countryCode);
-        }
     }
 
     private void SearchEast(int x, int y, int countryCode)
     {
-        if (x < _colCount - 1 && _mapData[x + 1, y] == countryCode && !_countryMap[x + 1, y])
-        {
-            _countryMap[x + 1, y] = true;
-            FindAllAdjacentEast(x + 1, y, countryCode);
-        }
+        _countryMap[x, y] = true;
+
+        // burn bridges
+        _eltMatch[x - 1, y] &= ~Direction.East;
+        _eltMatch[x, y] &= ~Direction.West;
+
+        NavigateNorth(x, y, countryCode);
+        NavigateEast(x, y, countryCode);
+        NavigateSouth(x, y, countryCode);
+
     }
 
-    private void SearchNorth(int x, int y, int countryCode)
+    private void SearchSouth(int x, int y, int countryCode)
     {
-        if (y > 0 && _mapData[x, y - 1] == countryCode && !_countryMap[x, y - 1])
-        {
-            _countryMap[x, y - 1] = true;
-            FindAllAdjacentNorth(x, y - 1, countryCode);
-        }
+        _countryMap[x, y] = true;
+
+        // burn bridges
+        _eltMatch[x, y - 1] &= ~Direction.South;
+        _eltMatch[x, y] &= ~Direction.North;
+
+        NavigateEast(x, y, countryCode);
+        NavigateSouth(x, y, countryCode);
+        NavigateWest(x, y, countryCode);
     }
 
     private void SearchWest(int x, int y, int countryCode)
     {
-        if (x > 0 && _mapData[x - 1, y] == countryCode && !_countryMap[x - 1, y])
-        {
-            _countryMap[x - 1, y] = true;
-            FindAllAdjacentWest(x - 1, y, countryCode);
-        }
+        _countryMap[x, y] = true;
+
+        // burn bridges
+        _eltMatch[x + 1, y] &= ~Direction.West;
+        _eltMatch[x, y] &= ~Direction.East;
+
+        NavigateSouth(x, y, countryCode);
+        NavigateWest(x, y, countryCode);
+        NavigateNorth(x, y, countryCode);
+
     }
 
+    private void NavigateNorth(int x, int y, int countryCode)
+    {
+        if (_eltMatch[x, y].HasFlag(Direction.North)) SearchNorth(x, y - 1, countryCode);
+    }
 
+    private void NavigateEast(int x, int y, int countryCode)
+    {
+        if (_eltMatch[x, y].HasFlag(Direction.East)) SearchEast(x + 1, y, countryCode);
+    }
+
+    private void NavigateWest(int x, int y, int countryCode)
+    {
+        if (_eltMatch[x, y].HasFlag(Direction.West)) SearchWest(x - 1, y, countryCode);
+    }
+
+    private void NavigateSouth(int x, int y, int countryCode)
+    {
+        if (_eltMatch[x, y].HasFlag(Direction.South)) SearchSouth(x, y + 1, countryCode);
+    }
 }
  
 public class A_codility_solution_should
