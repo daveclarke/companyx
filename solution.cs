@@ -6,21 +6,11 @@ using Xunit;
 
 class Solution {
 
-    [Flags]
-    private enum Direction
-    {
-        None = 0,
-        North = 1,
-        East = 2,
-        South = 4,
-        West = 8
-    }
-
     private int _rowCount;
     private int _colCount;
-    private bool[,] _countryMap;
     private int[,] _mapData;
-    private Direction[,] _eltMatch;
+    private int[] _parent;
+    private int[] _rank;
 
     public int Soln(int[,] A) {
         // N & M in range 1..300,000
@@ -28,123 +18,62 @@ class Solution {
         // each element is in range -1,000,000,000..1,000,000,000
         if (A.Length == 1 || A.Cast<int>().All(elt => elt == A[0,0])) return 1;
 
-        int countryCount = 0;
         _mapData = A;
         _colCount = _mapData.GetLength(0);
         _rowCount = _mapData.GetLength(1);
-        _countryMap = new bool[_colCount, _rowCount];
-        _eltMatch = new Direction[_colCount, _rowCount];
+        _parent = new int[ _colCount * _rowCount];
+        _rank = new int[ _colCount * _rowCount];
+
+        // initialise parents to self
+        for (var i = 0; i < _colCount * _rowCount; i++)
+        {
+            _parent[i] = i;
+        }
+
+        // check neighbours and join if adjacent
         for (var y = 0; y < _rowCount; y++)
         {
             for (var x = 0; x < _colCount; x++)
             {
-                var eltValue = _mapData[x,y];
-                if (x < _colCount - 1 &&  _mapData[x + 1, y] == eltValue)
-                {
-                    _eltMatch[x, y] |= Direction.East;
-                    _eltMatch[x + 1, y] |= Direction.West;
-                }
-                if (y < _rowCount - 1 && _mapData[x, y + 1] == eltValue)
-                {
-                    _eltMatch[x, y] |= Direction.South;
-                    _eltMatch[x, y + 1] |= Direction.North;
-                }
+                if (x > 0 && _mapData[x - 1, y] == _mapData[x, y]) Union(y * _colCount + x - 1, y * _colCount + x);
+                if (x < _colCount - 1 && _mapData[x, y] == _mapData[x + 1, y]) Union(y * _colCount + x, y * _colCount + x + 1);
+                if (y > 0 && _mapData[x, y - 1] == _mapData[x, y]) Union((y - 1) * _colCount + x, y * _colCount + x);
+                if (y < _rowCount - 1 && _mapData[x, y] == _mapData[x, y + 1]) Union(y * _colCount + x, (y + 1) * _colCount + x);
             }
         }
 
-        for (int y = 0; y < _rowCount; y++)
+        return _parent.ToHashSet().Count();
+    }
+
+    private void Union(int setOne, int setTwo)
+    {
+        var setOneRoot = FindParentOf(setOne);
+        var setTwoRoot = FindParentOf(setTwo);
+        if (setOneRoot == setTwoRoot) return;
+
+        if (_rank[setOneRoot] < _rank[setTwoRoot])
         {
-            for (int x = 0; x < _colCount; x++)
-            {
-                if (_countryMap[x,y]) continue;
-                
-                // new country, find all elements in country
-                countryCount++;
-                _countryMap[x, y] = true;
-                NavigateEast(x, y, _mapData[x, y]);
-                NavigateSouth(x, y, _mapData[x, y]);
-                _eltMatch[x, y] = Direction.None;
-            }
-
+            _parent[setOneRoot] = setTwoRoot;
+        }
+        else if (_rank[setTwoRoot] < _rank[setOneRoot])
+        {
+            _parent[setTwoRoot] = setOneRoot;
+        }
+        else
+        {
+            _parent[setTwoRoot] = setOneRoot;
+            _rank[setOneRoot]++;
         }
 
-        return countryCount;
     }
 
-    private void SearchNorth(int x, int y, int countryCode)
+    private int FindParentOf(int s)
     {
-        _countryMap[x, y] = true;
+        if (_parent[s] != s) return FindParentOf(_parent[s]);
 
-        // burn bridges
-        _eltMatch[x, y + 1] &= ~Direction.North;
-        _eltMatch[x, y] &= ~Direction.South;
-
-        NavigateWest(x, y, countryCode);
-        NavigateNorth(x, y, countryCode);
-        NavigateEast(x, y, countryCode);
-
+        return s;
     }
 
-    private void SearchEast(int x, int y, int countryCode)
-    {
-        _countryMap[x, y] = true;
-
-        // burn bridges
-        _eltMatch[x - 1, y] &= ~Direction.East;
-        _eltMatch[x, y] &= ~Direction.West;
-
-        NavigateNorth(x, y, countryCode);
-        NavigateEast(x, y, countryCode);
-        NavigateSouth(x, y, countryCode);
-
-    }
-
-    private void SearchSouth(int x, int y, int countryCode)
-    {
-        _countryMap[x, y] = true;
-
-        // burn bridges
-        _eltMatch[x, y - 1] &= ~Direction.South;
-        _eltMatch[x, y] &= ~Direction.North;
-
-        NavigateEast(x, y, countryCode);
-        NavigateSouth(x, y, countryCode);
-        NavigateWest(x, y, countryCode);
-    }
-
-    private void SearchWest(int x, int y, int countryCode)
-    {
-        _countryMap[x, y] = true;
-
-        // burn bridges
-        _eltMatch[x + 1, y] &= ~Direction.West;
-        _eltMatch[x, y] &= ~Direction.East;
-
-        NavigateSouth(x, y, countryCode);
-        NavigateWest(x, y, countryCode);
-        NavigateNorth(x, y, countryCode);
-
-    }
-
-    private void NavigateNorth(int x, int y, int countryCode)
-    {
-        if (_eltMatch[x, y].HasFlag(Direction.North)) SearchNorth(x, y - 1, countryCode);
-    }
-
-    private void NavigateEast(int x, int y, int countryCode)
-    {
-        if (_eltMatch[x, y].HasFlag(Direction.East)) SearchEast(x + 1, y, countryCode);
-    }
-
-    private void NavigateWest(int x, int y, int countryCode)
-    {
-        if (_eltMatch[x, y].HasFlag(Direction.West)) SearchWest(x - 1, y, countryCode);
-    }
-
-    private void NavigateSouth(int x, int y, int countryCode)
-    {
-        if (_eltMatch[x, y].HasFlag(Direction.South)) SearchSouth(x, y + 1, countryCode);
-    }
 }
  
 public class A_codility_solution_should
