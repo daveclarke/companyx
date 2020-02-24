@@ -35,9 +35,7 @@ class Solution {
         {
             for (var x = 0; x < _colCount; x++)
             {
-                if (x > 0 && _mapData[x - 1, y] == _mapData[x, y]) Union(y * _colCount + x - 1, y * _colCount + x);
                 if (x < _colCount - 1 && _mapData[x, y] == _mapData[x + 1, y]) Union(y * _colCount + x, y * _colCount + x + 1);
-                if (y > 0 && _mapData[x, y - 1] == _mapData[x, y]) Union((y - 1) * _colCount + x, y * _colCount + x);
                 if (y < _rowCount - 1 && _mapData[x, y] == _mapData[x, y + 1]) Union(y * _colCount + x, (y + 1) * _colCount + x);
             }
         }
@@ -69,9 +67,12 @@ class Solution {
 
     private int FindParentOf(int s)
     {
-        if (_parent[s] != s) return FindParentOf(_parent[s]);
+        if (_parent[s] != s)
+        {
+            _parent[s] = FindParentOf(_parent[s]); // compress path
+        }
 
-        return s;
+        return _parent[s];
     }
 
 }
@@ -148,7 +149,7 @@ public class A_codility_solution_should
         // arrange
         var soln = new Solution();
         var rand = new Random();
-        var colCount = 3000;
+        var colCount = 20000;
         var rowCount = 20000;
         var numbers = Enumerable.Range(0, 45).ToList();
         var testData = new int[colCount,rowCount];
