@@ -40,7 +40,7 @@ class Solution {
             }
         }
 
-        return _parent.ToHashSet().Count();
+        return _parent.ToHashSet().Count(); // only works if all elements are set to root
     }
 
     private void Union(int setOne, int setTwo)
@@ -86,45 +86,70 @@ public class A_codility_solution_should
         {
             return new []
             {
-                new object[] { new int[,] { { 1, 2 },
-                                            { 2, 2 } }, 2 },
-                new object[] { new int[,] { { 5, 4, 4 },
-                                            { 4, 3, 4 } }, 4 },
-                new object[] { new int[,] { { 0 } }, 1 },
-                new object[] { new int[,] { { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } }, 1 },
-                new object[] { new int[,] { { 1, 2, 3 } }, 3 },
-                new object[] { new int[,] { { 1 }, { 2 }, { 3 } }, 3 },
-                new object[] { new int[,] { { 1, 2 }, { 3, 4 } }, 4 },
-                new object[] { new int[,] { { 1, 2 }, { 3, 4 }, { 5, 6 } }, 6 },
-                new object[] { new int[,] { { 1, 2, 3 }, { 4, 5, 6 } }, 6}, 
+                // new object[] { new int[,] { { 1, 2 },
+                //                             { 2, 2 } }, 2 },
+                // new object[] { new int[,] { { 5, 4, 4 },
+                //                             { 4, 3, 4 } }, 4 },
+                // new object[] { new int[,] { { 0 } }, 1 },
+                // new object[] { new int[,] { { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } }, 1 },
+                // new object[] { new int[,] { { 1, 2, 3 } }, 3 },
+                // new object[] { new int[,] { { 1 }, { 2 }, { 3 } }, 3 },
+                // new object[] { new int[,] { { 1, 2 }, { 3, 4 } }, 4 },
+                // new object[] { new int[,] { { 1, 2 }, { 3, 4 }, { 5, 6 } }, 6 },
+                // new object[] { new int[,] { { 1, 2, 3 }, { 4, 5, 6 } }, 6}, 
 
-                new object[] { new int[,] { { 1, 1, 1 } }, 1 },
-                new object[] { new int[,] { { 1 }, { 1 }, { 1 } }, 1 },
-                new object[] { new int[,] { { 1, 1 }, { 1, 1 } }, 1 },
-                new object[] { new int[,] { { 1, 1 }, { 1, 1 }, { 1, 1 } }, 1 },
-                new object[] { new int[,] { { 1, 1, 1 }, { 1, 1, 1 } }, 1}, 
+                // new object[] { new int[,] { { 1, 1, 1 } }, 1 },
+                // new object[] { new int[,] { { 1 }, { 1 }, { 1 } }, 1 },
+                // new object[] { new int[,] { { 1, 1 }, { 1, 1 } }, 1 },
+                // new object[] { new int[,] { { 1, 1 }, { 1, 1 }, { 1, 1 } }, 1 },
+                // new object[] { new int[,] { { 1, 1, 1 }, { 1, 1, 1 } }, 1}, 
 
-                new object[] { new int[,] { { 1, 2, 1 } }, 3 },
-                new object[] { new int[,] { { 1 }, { 2 }, { 1 } }, 3 },
-                new object[] { new int[,] { { 1, 2 },
-                                            { 1, 2 } }, 2 },
-                new object[] { new int[,] { { 1, 2 }, { 1, 2 }, { 1, 2 } }, 2 },
-                new object[] { new int[,] { { 1, 2, 1 }, { 1, 2, 1 } }, 3}, 
+                // new object[] { new int[,] { { 1, 2, 1 } }, 3 },
+                // new object[] { new int[,] { { 1 }, { 2 }, { 1 } }, 3 },
+                // new object[] { new int[,] { { 1, 2 },
+                //                             { 1, 2 } }, 2 },
+                // new object[] { new int[,] { { 1, 2 }, { 1, 2 }, { 1, 2 } }, 2 },
+                // new object[] { new int[,] { { 1, 2, 1 }, { 1, 2, 1 } }, 3}, 
                 
+                // new object[] { new int[,] { { 5, 4, 4 }, 
+                //                             { 4, 3, 4 },
+                //                             { 3, 2, 4 } }, 6 },
+                // new object[] { new int[,] { { 5, 4, 4 }, 
+                //                             { 4, 3, 4 },
+                //                             { 3, 2, 4 },
+                //                             { 2, 2, 2 } }, 6 },
+                // new object[] { new int[,] { { 5, 4, 4 }, 
+                //                             { 4, 3, 4 },
+                //                             { 3, 2, 4 },
+                //                             { 2, 2, 2 }, 
+                //                             { 3, 3, 4 }, 
+                //                             { 1, 4, 4 }, 
+                //                             { 4, 1, 1 } }, 11 },
+                // new object[] { new int[,] { { 5, 4, 4 }, 
+                //                             { 4, 3, 4 },
+                //                             { 4, 1, 1 } }, 5 },
+                // new object[] { new int[,] { { 5, 4, 4 }, 
+                //                             { 4, 3, 4 },
+                //                             { 4, 2, 4 },
+                //                             { 4, 1, 1 } }, 6 },
                 new object[] { new int[,] { { 5, 4, 4 }, 
                                             { 4, 3, 4 },
-                                            { 3, 2, 4 } }, 6 },
-                new object[] { new int[,] { { 5, 4, 4 }, 
-                                            { 4, 3, 4 },
-                                            { 3, 2, 4 },
-                                            { 2, 2, 2 } }, 6 },
-                new object[] { new int[,] { { 5, 4, 4 }, 
-                                            { 4, 3, 4 },
-                                            { 3, 2, 4 },
-                                            { 2, 2, 2 }, 
-                                            { 3, 3, 4 }, 
-                                            { 1, 4, 4 }, 
-                                            { 4, 1, 1 } }, 11 },
+                                            { 4, 2, 4 },
+                                            { 4, 4, 4 }, 
+                                            { 4, 1, 1 } }, 5 },
+                // new object[] { new int[,] { { 5, 4, 4 }, 
+                //                             { 4, 3, 4 },
+                //                             { 4, 2, 4 },
+                //                             { 4, 4, 4 }, 
+                //                             { 3, 3, 4 }, 
+                //                             { 4, 1, 1 } }, 7 },
+                // new object[] { new int[,] { { 5, 4, 4 }, 
+                //                             { 4, 3, 4 },
+                //                             { 4, 2, 4 },
+                //                             { 4, 4, 4 }, 
+                //                             { 3, 3, 4 }, 
+                //                             { 1, 4, 4 }, 
+                //                             { 4, 1, 1 } }, 8 },
             };
         }
     }
@@ -149,7 +174,7 @@ public class A_codility_solution_should
         // arrange
         var soln = new Solution();
         var rand = new Random();
-        var colCount = 20000;
+        var colCount = 3000;
         var rowCount = 20000;
         var numbers = Enumerable.Range(0, 45).ToList();
         var testData = new int[colCount,rowCount];
