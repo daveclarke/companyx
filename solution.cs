@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 class Solution {
@@ -21,14 +20,10 @@ class Solution {
         _mapData = A;
         _colCount = _mapData.GetLength(0);
         _rowCount = _mapData.GetLength(1);
-        _parent = new int[ _colCount * _rowCount];
         _rank = new int[ _colCount * _rowCount];
 
         // initialise parents to self
-        for (var i = 0; i < _colCount * _rowCount; i++)
-        {
-            _parent[i] = i;
-        }
+        _parent = Enumerable.Range(0, _colCount * _rowCount).ToArray();
 
         // check neighbours and join if adjacent
         for (var y = 0; y < _rowCount; y++)
@@ -40,14 +35,8 @@ class Solution {
             }
         }
 
-        // country count is number of elements where index == value
-        var countryCount = 0;
-        for (var i = 0; i < _parent.Length; i++)
-        {
-            if (_parent[i] == i) countryCount++;
-        }
-
-        return countryCount;        
+        // country count is number of elements with index == value
+        return _parent.Where((i, idx) => i == idx).Count();
     }
 
     private void Union(int setOne, int setTwo)
